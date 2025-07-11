@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Geliştirme Meclisi - Sunucu Bakımda</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --dark: #212529;
+            --light: #f8f9fa;
+            --danger: #ef233c;
+            --success: #2b9348;
+            --warning: #ff9e00;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f7ff;
+            color: var(--dark);
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 90%;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin: 2rem;
+        }
+        
+        .header {
+            background: var(--primary);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 2.2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .header p {
+            margin: 0.5rem 0 0;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+        
+        .status-card {
+            padding: 2rem;
+        }
+        
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: 600;
+            background: var(--danger);
+            color: white;
+            margin-bottom: 1.5rem;
+        }
+        
+        .downtime-info {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .downtime-info h3 {
+            margin-top: 0;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .timer-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 2rem 0;
+        }
+        
+        .timer {
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            color: var(--dark);
+            display: flex;
+            gap: 5px;
+        }
+        
+        .timer-segment {
+            background: var(--light);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            min-width: 70px;
+            text-align: center;
+        }
+        
+        .timer-labels {
+            display: flex;
+            gap: 25px;
+            margin-top: 5px;
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+        
+        .updates {
+            margin-top: 2rem;
+        }
+        
+        .update-item {
+            border-left: 3px solid var(--primary);
+            padding-left: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .update-time {
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 1.5rem;
+            border-top: 1px solid #e9ecef;
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        
+        .material-icons {
+            font-size: inherit;
+            vertical-align: middle;
+        }
+        
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .timer {
+                font-size: 2rem;
+            }
+            
+            .timer-segment {
+                min-width: 60px;
+                padding: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                <span class="material-icons">dns</span>
+                Web Geliştirme Meclisi
+            </h1>
+            <p>Topluluk platformu - Sunucu Durumu</p>
+        </div>
+        
+        <div class="status-card">
+            <div class="status-badge">
+                <span class="material-icons">error</span>
+                SUNUCU KAPALI
+            </div>
+            
+            <div class="downtime-info">
+                <h3>
+                    <span class="material-icons">info</span>
+                    Kesinti Bilgisi
+                </h3>
+                <p id="downtime-reason">Sunucumuz planlı bakım çalışmaları nedeniyle geçici olarak hizmet dışıdır.</p>
+            </div>
+            
+            <div class="timer-container">
+                <div class="timer" id="downtime-timer">
+                    <span class="timer-segment" id="hours">00</span>
+                    <span>:</span>
+                    <span class="timer-segment" id="minutes">00</span>
+                    <span>:</span>
+                    <span class="timer-segment" id="seconds">00</span>
+                </div>
+                <div class="timer-labels">
+                    <span>Saat</span>
+                    <span>Dakika</span>
+                    <span>Saniye</span>
+                </div>
+            </div>
+            
+            <div class="updates">
+                <h3>
+                    <span class="material-icons">update</span>
+                    Güncellemeler
+                </h3>
+                
+                <div class="update-item">
+                    <div class="update-time">
+                        <span class="material-icons">schedule</span>
+                        <span id="last-update-time">Son güncelleme: Yükleniyor...</span>
+                    </div>
+                    <p id="status-message">Sunucu durumu kontrol ediliyor ve güncellemeler burada paylaşılacaktır.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            &copy; <span id="current-year"></span> Web Geliştirme Meclisi. Tüm hakları saklıdır.
+        </div>
+    </div>
+
+    <script>
+        // CONFIGURATION - Edit these values
+        const downtimeStartTime = "1305"; // 24-hour format (UTC+3), e.g. "1305" for 1:05 PM
+        const downtimeReason = "Planlı bakım çalışmaları: Veritabanı yükseltme işlemi yapılıyor. Tahmini tamamlanma süresi 2 saattir.";
+        
+        // Convert 24-hour time string to Date object in UTC+3
+        function parseCustomTime(timeStr) {
+            const now = new Date();
+            const hours = parseInt(timeStr.substring(0, 2));
+            const minutes = parseInt(timeStr.substring(2, 4));
+            
+            // Create date in UTC+3 (Turkey time)
+            const utc3Date = new Date(now);
+            utc3Date.setHours(hours, minutes, 0, 0);
+            
+            // Convert to local time for calculations
+            return new Date(utc3Date.getTime() - (3 * 60 * 60 * 1000));
+        }
+        
+        // Format time difference
+        function formatTimeDiff(diff) {
+            const hours = Math.floor(diff / (1000 * 60 * 60)).toString().padStart(2, '0');
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000).toString().padStart(2, '0');
+            
+            return {
+                hours,
+                minutes,
+                seconds
+            };
+        }
+        
+        // Update timer every second
+        function updateTimer() {
+            const now = new Date();
+            const diff = now - downtimeStart;
+            
+            const time = formatTimeDiff(diff);
+            
+            document.getElementById('hours').textContent = time.hours;
+            document.getElementById('minutes').textContent = time.minutes;
+            document.getElementById('seconds').textContent = time.seconds;
+            
+            // Update last update time
+            const options = { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric', 
+                hour: '2-digit', 
+                minute: '2-digit',
+                timeZoneName: 'short'
+            };
+            document.getElementById('last-update-time').textContent = 
+                `Son güncelleme: ${now.toLocaleDateString('tr-TR', options)}`;
+                
+            // Update status message if more than 1 hour
+            if (diff > 3600000) {
+                document.getElementById('status-message').textContent = 
+                    `Ekip çalışmaları devam ediyor. ${time.hours} saat ${time.minutes} dakikadır kesinti devam ediyor.`;
+            }
+        }
+        
+        // Initialize
+        const downtimeStart = parseCustomTime(downtimeStartTime);
+        document.getElementById('downtime-reason').textContent = downtimeReason;
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+        
+        updateTimer();
+        const timerInterval = setInterval(updateTimer, 1000);
+        
+        // For demonstration: Uncomment to simulate server coming back online after 10 seconds
+        /*
+        setTimeout(() => {
+            clearInterval(timerInterval);
+            document.querySelector('.status-badge').innerHTML = 
+                '<span class="material-icons">check_circle</span> SUNUCU AKTİF';
+            document.querySelector('.status-badge').style.background = 'var(--success)';
+            document.getElementById('status-message').textContent = 
+                'Sunucu çalışmaya başladı! Yönlendiriliyorsunuz...';
+        }, 10000);
+        */
+    </script>
+</body>
+</html>
