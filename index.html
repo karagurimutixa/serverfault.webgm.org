@@ -236,8 +236,8 @@
 
     <script>
         // CONFIGURATION - Edit these values
-        const downtimeStartTime = "1305"; // 24-hour format (UTC+3), e.g. "1305" for 1:05 PM
-        const downtimeReason = "Planlı bakım çalışmaları: Veritabanı yükseltme işlemi yapılıyor. Tahmini tamamlanma süresi 2 saattir.";
+        const downtimeStartTime = "0000"; // 24-hour format (UTC+3), e.g. "1305" for 1:05 PM
+        const downtimeReason = "Server Temporary Relocation.";
         
         // Convert 24-hour time string to Date object in UTC+3
         function parseCustomTime(timeStr) {
@@ -292,7 +292,7 @@
             // Update status message if more than 1 hour
             if (diff > 3600000) {
                 document.getElementById('status-message').textContent = 
-                    `Ekip çalışmaları devam ediyor. ${time.hours} saat ${time.minutes} dakikadır kesinti devam ediyor.`;
+                    `Kesinti, ${time.hours} saat ${time.minutes} dakikadır devam ediyor.`;
             }
         }
         
